@@ -36,12 +36,11 @@ Start-Process `
 
 Start-Process `
     -FilePath $npmPath `
-    -ArgumentList @("start") `
+    -ArgumentList @("run", "dev", "--", "--host", "127.0.0.1", "--port", "5173") `
     -WorkingDirectory $frontendPath `
     -WindowStyle Hidden
 
 Start-Sleep -Seconds 3
-Start-Process "http://localhost:3000"
+Start-Process "http://127.0.0.1:5173"
 
-Write-Host "Backend and frontend are starting."
-
+Write-Host "Backend and frontend are starting on ports 8000 and 5173."

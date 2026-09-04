@@ -13,7 +13,7 @@ if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
 }
 
 if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-    throw "npm was not found in PATH. Install Node.js 18 or later first."
+    throw "npm was not found in PATH. Install Node.js 20.17 or later first."
 }
 
 if (-not (Test-Path -LiteralPath $pythonPath)) {
@@ -21,7 +21,7 @@ if (-not (Test-Path -LiteralPath $pythonPath)) {
 }
 
 & $pythonPath -m pip install --upgrade pip
-& $pythonPath -m pip install -r (Join-Path $backendPath "requirements.txt")
+& $pythonPath -m pip install -r (Join-Path $backendPath "requirements-dev.txt")
 & $pythonPath (Join-Path $backendPath "manage.py") migrate
 
 Push-Location $frontendPath
@@ -37,4 +37,3 @@ if (-not (Test-Path -LiteralPath $envFile)) {
 }
 
 Write-Host "Setup complete. Run start_project.bat to launch the application."
-

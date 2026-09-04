@@ -1,0 +1,94 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-bili_insight}
+      POSTGRES_USER: ${POSTGRES_USER:-bili_insight}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-development-password}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bili_insight}"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --save 60 1
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  backend:
+    build: ./backend
+    command: >
+      sh -c "python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      gunicorn djangoProject1.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120"
+    environment: &backend-environment
+      DJANGO_DEBUG: "false"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-docker-local-secret-change-before-deploying}
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,backend
+      CSRF_TRUSTED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      COOKIE_SECURE: "false"
+      TRUST_PROXY_HEADERS: "true"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: ${POSTGRES_DB:-bili_insight}
+      POSTGRES_USER: ${POSTGRES_USER:-bili_insight}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-development-password}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      TASK_EXECUTION_MODE: celery
+      ENABLE_WAITING_GAME: "false"
+    volumes:
+      - downloads:/app/download
+      - static-files:/app/staticfiles
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/')"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  worker:
+    build: ./backend
+    command: celery -A djangoProject1 worker --loglevel=info --concurrency=2
+    environment: *backend-environment
+    volumes:
+      - downloads:/app/download
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ""
+    ports:
+      - "5173:80"
+    volumes:
+      - downloads:/srv/downloads:ro
+      - static-files:/srv/static:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  redis-data:
+  downloads:
+  static-files:
