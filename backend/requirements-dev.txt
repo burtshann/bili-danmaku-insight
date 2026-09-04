@@ -1,0 +1,4 @@
+-r requirements.txt
+
+pygame==2.6.1
+ruff==0.16.6

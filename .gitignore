@@ -19,6 +19,8 @@ video_errorlist.txt
 # Frontend
 frontend/node_modules/
 frontend/build/
+frontend/dist/
+.npm-cache/
 frontend/.env*
 !frontend/.env.example
 npm-debug.log*
@@ -37,4 +39,3 @@ yarn-error.log*
 .vscode/
 .DS_Store
 Thumbs.db
-
