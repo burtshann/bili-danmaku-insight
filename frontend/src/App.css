@@ -1,0 +1,110 @@
+@media screen and (max-width: 500px) {
+  #features {
+    padding: 20px;
+    width: 111%;
+  }
+  #about,
+  #services,
+  #testimonials,
+  #team,
+  #contact,
+  #footer {
+    width: 111%;
+  }
+
+  #portfolio {
+    width: 110%;
+    padding: 200px;
+  }
+
+  #video-url {
+    width: 300px; /* Adjust the width */
+
+  }
+
+  /* Gallery.css */
+.btn-custom {
+  transition: all 0.3s ease; /* Smooth transition for any changes (like color change) */
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  outline: none;
+  border: none;
+}
+
+/* Larger button (main fetch data button) */
+.btn-lg {
+  font-size: 18px;
+  padding: 15px 30px;
+}
+
+/* Smaller button (pie, line, scatter chart buttons) */
+.btn-sm {
+  font-size: 14px;
+  padding: 8px 16px;
+}
+
+/* Specific color for pie chart button */
+.bar-btn {
+  background-color: #f4945f;
+  color: white;
+}
+
+.bar-btn:hover {
+  background-color: #e37a3d; /* Darker shade on hover */
+}
+
+/* Specific color for line chart button */
+.line-btn {
+  background-color: #5e5e5e;
+  color: white;
+}
+
+.line-btn:hover {
+  background-color: #444444;
+}
+
+/* Specific color for scatter chart button */
+.scatter-btn {
+  background-color: #3dbf7f;
+  color: white;
+}
+
+.scatter-btn:hover {
+  background-color: #319c66;
+}
+
+/* Animation for button appearance */
+.btn-custom {
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Optional: Adding a slight bounce when button appears */
+.btn-custom {
+  animation: fadeIn 1s ease-out, bounce 0.5s ease-out 1s forwards;
+}
+
+@keyframes bounce {
+  0% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+}

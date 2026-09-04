@@ -1,0 +1,178 @@
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <meta name="viewport" content="width=device-width, initial-scale=1.0">#}
+{#    <title>高频词统计和视频下载</title>#}
+{#</head>#}
+{#<body>#}
+{#    <h1>高频词统计</h1>#}
+{#    <label for="video-url">请输入视频URL：</label>#}
+{#    <input type="text" id="video-url" placeholder="输入视频URL" />#}
+{##}
+{#    <button id="fetch-data-btn">获取高频词数据</button>#}
+{#    <button id="download-video-btn">下载视频</button>#}
+{#    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">#}
+{#    <div id="main" style="width: 600px; height: 400px;"></div>#}
+{##}
+{#    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>#}
+{##}
+{#    <script>#}
+{#        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;#}
+{#        document.getElementById('fetch-data-btn').addEventListener('click', function() {#}
+{#            const videoUrl = document.getElementById('video-url').value; // 获取输入的URL#}
+{##}
+{#            // 使用输入的URL发送请求获取高频词数据#}
+{#            fetch('/get_high_freq_data/', {#}
+{#                method: 'POST',#}
+{#                headers: {#}
+{#                    'Content-Type': 'application/json',#}
+{#                    'X-CSRFToken': csrftoken #}
+{#                },#}
+{#                body: JSON.stringify({ danmaku: videoUrl })  // 将URL发送到服务器#}
+{#            })#}
+{#            .then(response => response.json())#}
+{#            .then(data => {#}
+{#                var myChart = echarts.init(document.getElementById('main'));#}
+{#                var option = {#}
+{#                    xAxis: {#}
+{#                        type: 'category',#}
+{#                        data: data.words#}
+{#                    },#}
+{#                    yAxis: {#}
+{#                        type: 'value'#}
+{#                    },#}
+{#                    series: [{#}
+{#                        data: data.counts,#}
+{#                        type: 'bar',#}
+{#                        smooth: true#}
+{#                    }]#}
+{#                };#}
+{#                myChart.setOption(option);#}
+{#            })#}
+{#            .catch(error => {#}
+{#                console.error('Error fetching data:', error);#}
+{#            });#}
+{#        });#}
+{##}
+{#        // 下载视频按钮#}
+{#        document.getElementById('download-video-btn').addEventListener('click', function() {#}
+{#            const videoUrl = document.getElementById('video-url').value; // 获取输入的URL#}
+{##}
+{#            // 发送下载请求#}
+{#            fetch('/download_video/', {#}
+{#                method: 'POST',#}
+{#                headers: {#}
+{#                    'Content-Type': 'application/json',#}
+{#                    'X-CSRFToken': csrftoken#}
+{#                },#}
+{#                body: JSON.stringify({ url: videoUrl })  // 将URL发送到服务器#}
+{#            })#}
+{#            .then(response => response.text())#}
+{#            .then(data => {#}
+{#                alert(data);  // 提示用户下载结果#}
+{#            })#}
+{#            .catch(error => {#}
+{#                console.error('Error downloading video:', error);#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+{#</body>#}
+{#</html>#}
+{#下方为整合测试#}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频分析</title>
+</head>
+<body>
+    <label for="video-url">请输入视频URL：</label>
+    <input type="text" id="video-url" placeholder="输入视频URL" />
+
+    <button id="fetch-data-btn">获取高频词数据</button>
+    <button id="fetch-max-danmaku-btn">获取精彩时间段</button>
+    <button id="download-video-btn">下载视频</button>
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <div id="main" style="width: 600px; height: 400px;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+
+    <script>
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        document.getElementById('fetch-data-btn').addEventListener('click', function() {
+            const videoUrl = document.getElementById('video-url').value;
+
+            fetch('/get_high_freq_data/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken 
+                },
+                body: JSON.stringify({ danmaku: videoUrl })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const chart = echarts.init(document.getElementById('main'));
+                const option = {
+                    title: {
+                        text: '高频词'
+                    },
+                    tooltip: {},
+                    xAxis: {
+                        type: 'category',
+                        data: data.words
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [{
+                        data: data.counts,
+                        type: 'bar'
+                    }]
+                };
+                chart.setOption(option);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('fetch-max-danmaku-btn').addEventListener('click', function() {
+            const videoUrl = document.getElementById('video-url').value;
+
+            fetch('/get_max_danmaku/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ danmaku: videoUrl })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`精彩时间段：${data.start_time}s - ${data.end_time}s`);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('download-video-btn').addEventListener('click', function() {
+            const videoUrl = document.getElementById('video-url').value;
+
+            fetch('/download_video/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ url: videoUrl })
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
