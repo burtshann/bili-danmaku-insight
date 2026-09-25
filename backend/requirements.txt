@@ -5,7 +5,7 @@ django-cors-headers==4.9.0
 gunicorn==23.0.0
 jieba==0.42.1
 openpyxl==3.1.5
-psycopg[binary]==3.3.5
+psycopg[binary]==3.3.6
 redis==6.4.0
 requests==2.34.2
 yt-dlp==2026.8.19
